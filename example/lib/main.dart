@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:html_to_pdf/html_to_pdf.dart';
+import 'package:html_to_pdf_example/sample_html_content.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -45,13 +46,14 @@ class _MyAppState extends State<MyApp> {
               : SizedBox(),
         ),
         buildButton(),
+        buildSteakyButton(),
       ],
     );
   }
 
   Padding buildButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: ElevatedButton(
         child: Text("Open Generated PDF Preview"),
         onPressed: generateExampleDocument,
@@ -59,58 +61,50 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Future<void> generateExampleDocument() async {
-    final htmlContent = """
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <style>
-        table, th, td {
-          border: 1px solid black;
-          border-collapse: collapse;
-        }
-        th, td, p {
-          padding: 5px;
-          text-align: left;
-        }
-        </style>
-      </head>
-      <body>
-        <h2>PDF Generated with html_to_pdf plugin</h2>
-        
-        <table style="width:100%">
-          <caption>Sample HTML Table</caption>
-          <tr>
-            <th>Month</th>
-            <th>Savings</th>
-          </tr>
-          <tr>
-            <td>January</td>
-            <td>100</td>
-          </tr>
-          <tr>
-            <td>February</td>
-            <td>50</td>
-          </tr>
-        </table>
-        
-        <p>Image loaded from web</p>
-        <img src="https://i.imgur.com/wxaJsXF.png" alt="web-img">
-      </body>
-    </html>
-    """;
+  Padding buildSteakyButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: ElevatedButton(
+        child: Text("Generated Steaky PDF Preview"),
+        onPressed: generateSteakyDocument,
+      ),
+    );
+  }
 
+  Future<void> generateExampleDocument() async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final targetPath = appDocDir.path;
     final targetFileName = "example-pdf";
 
     final generatedPdfFile = await HtmlToPdf.convertFromHtmlContent(
-      htmlContent: htmlContent,
+      htmlContent: normalContent,
       printPdfConfiguration: PrintPdfConfiguration(
         targetDirectory: targetPath,
         targetName: targetFileName,
         printSize: PrintSize.A4,
         printOrientation: PrintOrientation.Landscape,
+      ),
+    );
+
+    setState(
+      () {
+        generatedPdfFilePath = generatedPdfFile.path;
+      },
+    );
+  }
+
+  Future<void> generateSteakyDocument() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final targetPath = appDocDir.path;
+    final targetFileName = "steaky-pdf";
+
+    final generatedPdfFile = await HtmlToPdf.convertFromHtmlContent(
+      htmlContent: contentWithSteakyHeader,
+      printPdfConfiguration: PrintPdfConfiguration(
+        targetDirectory: targetPath,
+        targetName: targetFileName,
+        printSize: PrintSize.A4,
+        printOrientation: PrintOrientation.Portrait,
       ),
     );
 
