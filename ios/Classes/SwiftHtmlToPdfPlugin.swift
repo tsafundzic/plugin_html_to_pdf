@@ -20,7 +20,8 @@ public class SwiftHtmlToPdfPlugin: NSObject, FlutterPlugin{
         let width = Double(args!["width"] as! Int)
         let height = Double(args!["height"] as! Int)
         let orientation = args!["orientation"]
-        
+        let linksClickable = args!["linksClickable"] as! Bool
+
         let viewControler = UIApplication.shared.delegate?.window?!.rootViewController
         wkWebView = WKWebView.init(frame: CGRect(origin: CGPoint(x:0, y:0), size: CGSize(width:width, height: height)))
         wkWebView.isHidden = true
@@ -35,11 +36,16 @@ public class SwiftHtmlToPdfPlugin: NSObject, FlutterPlugin{
         
         let htmlFileContent = FileHelper.getContent(from: htmlFilePath!) // get html content from file
         wkWebView.loadHTMLString(htmlFileContent, baseURL: Bundle.main.bundleURL) // load html into hidden webview
-        
+        let fmt: UIPrintFormatter
+        if linksClickable {
+            fmt = UIMarkupTextPrintFormatter(markupText: htmlFileContent)
+        } else {
+            fmt = self.wkWebView.viewPrintFormatter()
+        }
         urlObservation = wkWebView.observe(\.isLoading, changeHandler: { (webView, change) in
             // this is workaround for issue with loading local images
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                let convertedFileURL = PDFCreator.create(printFormatter: self.wkWebView.viewPrintFormatter(), width: width, height: height)
+                let convertedFileURL = PDFCreator.create(printFormatter: fmt, width: width, height: height)
                 let convertedFilePath = convertedFileURL.absoluteString.replacingOccurrences(of: "file://", with: "") // return generated pdf path
                 if let viewWithTag = viewControler?.view.viewWithTag(100) {
                     viewWithTag.removeFromSuperview() // remove hidden webview when pdf is generated

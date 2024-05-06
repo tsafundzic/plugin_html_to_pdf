@@ -30,6 +30,7 @@ class HtmlToPdf {
       temporaryCreatedHtmlFile.path,
       printPdfConfiguration.printSize,
       printPdfConfiguration.printOrientation,
+      printPdfConfiguration.linksClickable,
     );
 
     temporaryCreatedHtmlFile.delete();
@@ -52,6 +53,7 @@ class HtmlToPdf {
       htmlFile.path,
       printPdfConfiguration.printSize,
       printPdfConfiguration.printOrientation,
+      printPdfConfiguration.linksClickable,
     );
 
     return FileUtils.copyAndDeleteOriginalFile(
@@ -72,6 +74,7 @@ class HtmlToPdf {
       htmlFilePath,
       printPdfConfiguration.printSize,
       printPdfConfiguration.printOrientation,
+      printPdfConfiguration.linksClickable,
     );
 
     return FileUtils.copyAndDeleteOriginalFile(
@@ -86,6 +89,7 @@ class HtmlToPdf {
     String htmlFilePath,
     PrintSize printSize,
     PrintOrientation printOrientation,
+    bool linksClickable,
   ) async {
     int width = printSize
         .getDimensionsInPixels[printOrientation.getWidthDimensionIndex];
@@ -100,6 +104,7 @@ class HtmlToPdf {
         'height': height,
         'printSize': printSize.printSizeKey,
         'orientation': printOrientation.orientationKey,
+        'linksClickable': linksClickable,
       },
     ) as String;
   }

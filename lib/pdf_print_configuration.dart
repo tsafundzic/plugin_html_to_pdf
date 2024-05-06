@@ -6,6 +6,9 @@ class PrintPdfConfiguration {
   final PrintSize printSize;
   final PrintOrientation printOrientation;
 
+  /// Make links clickable on iOS. But, any image will need to be set as data base64  <img src="data:image/jpeg;base64,[DATA]" />
+  final bool linksClickable;
+
   /// `targetDirectory` is the desired path for the Pdf file.
   ///
   /// `targetName` is the name of the Pdf file
@@ -18,6 +21,7 @@ class PrintPdfConfiguration {
     required this.targetName,
     this.printSize = PrintSize.A4,
     this.printOrientation = PrintOrientation.Portrait,
+    this.linksClickable = false,
   });
 
   /// Returns the final path for temporary Html File
